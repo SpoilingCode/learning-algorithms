@@ -1,4 +1,7 @@
 
+
+#include <stdio.h>
+
 #ifndef PUPIL_H
 #define PUPIL_H
 
@@ -7,8 +10,8 @@ typedef struct {
 	char *surname; // фамилия
 	short age;     // возраст 
 	short grade;   // номер курса
-	pupil* next;   // следующий элемент
-	pupil* prev;   // предыдущий элемент
+	struct pupil* next;   // следующий элемент
+	struct pupil* prev;   // предыдущий элемент
 } pupil;
 
 // Какая либо фатальная ошибка работы со структурой
@@ -17,6 +20,9 @@ void pupil_error(const char*);
 
 // Предупреждение об ошибке, не приводящей к завершению работы программы
 void pupil_warning(const char*);
+
+// наш безопасный вариант сравнения строк, который может обрабатывать NULL как пустую строку
+short pupil_strcmp(const char*, const char*);
 
 // Производит лексическое сравнение двух студентов
 // возвращает -1, 0 или 1, аналогично функции strcmp
@@ -27,6 +33,11 @@ pupil* pupil_new();
 
 // Освобождает память одной структуры
 short pupil_free(pupil*);
+
+void pupil_set_name(pupil*, const char*, short);
+
+void pupil_set_surname(pupil*, const char*, short);
+
 
 // Освобождает память, занятую всем списком, по указателю
 // на любой его элемент
@@ -50,7 +61,7 @@ pupil* pupil_insert_alphabetically(pupil* any_list_element, pupil* new_element);
 // элемент списка если он есть, либо на предыдущий, либо NULL
 // если список состоит из одного элемента или если входной указатель NULL
 // "Отчислить студента" :-D
-pupil* pupil_kickout(pupil *current);
+pupil* pupil_remove(pupil *current);
 
 // Находит указатель на первый элемент списка 
 // Если список циклический, произойдет зацикливание
