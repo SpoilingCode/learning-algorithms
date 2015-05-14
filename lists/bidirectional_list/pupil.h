@@ -5,7 +5,7 @@
 #ifndef PUPIL_H
 #define PUPIL_H
 
-typedef struct {
+typedef struct pupil {
     char *name;    // имя
 	char *surname; // фамилия
 	short age;     // возраст 

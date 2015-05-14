@@ -31,10 +31,10 @@ void pupil_warning(const char* message)
 short pupil_strcmp(const char* s1, const char* s2)
 {
     if (s1 == NULL) {
-        pupil_warning("pupil_strcmp: left operand is null");
+        pupil_warning("pupil_strcmp: left operand is null\n");
     }
     if (s2 == NULL) {
-        pupil_warning("pupil_strcmp: right operand is null");
+        pupil_warning("pupil_strcmp: right operand is null\n");
     }
     if (s1 == NULL && s2 == NULL) {
         return 0;
@@ -51,10 +51,10 @@ short pupil_cmp(pupil* p1, pupil* p2)
 {
     short cmp;
     if (p1 == NULL) {
-        pupil_warning("pupil_cmp: left operand is null");
+        pupil_warning("pupil_cmp: left operand is null\n");
     }
     if (p2 == NULL) {
-        pupil_warning("pupil_cmp: right operand is null");
+        pupil_warning("pupil_cmp: right operand is null\n");
     }
     if (p1 == NULL && p2 == NULL) {
         return 0;
@@ -74,7 +74,7 @@ pupil* pupil_new()
 
     pupil* p = (pupil*) malloc(sizeof(pupil));
     if (p == NULL) {
-        pupil_error("Can't allocate memory for pupil structure");
+        pupil_error("Can't allocate memory for pupil structure\n");
     }
     p->name = NULL;
     p->surname = NULL;
@@ -136,7 +136,7 @@ void pupil_set_name(pupil* p, const char* name, short maxlength)
     }
     p->name = (char*) malloc(chars*sizeof(char));
     if (p->name == NULL) {
-        pupil_error("Can't allocate memory for pupil->name");
+        pupil_error("Can't allocate memory for pupil->name\n");
     }
     strncpy(p->name, name, chars);
 }
@@ -146,7 +146,7 @@ void pupil_set_surname(pupil* p, const char* surname, short maxlength)
     short len = 0, chars = 0;
     if (p == NULL) {
         pupil_warning("Can't set surname on NULL pupil\n");
-        printf("surname: %s", surname);
+        printf("surname: %s\n", surname);
         return;
     }
     if (surname == NULL) {
@@ -168,7 +168,7 @@ void pupil_set_surname(pupil* p, const char* surname, short maxlength)
     }
     p->surname = (char*) malloc(chars*sizeof(char));
     if (p->surname == NULL) {
-        pupil_error("Can't allocate memory for pupil->surname");
+        pupil_error("Can't allocate memory for pupil->surname\n");
     }
     strncpy(p->surname, surname, chars);
 }
@@ -180,7 +180,7 @@ short pupil_free_list(pupil *p)
     short count = 0;
     while (first != NULL) {
 
-        var = (pupil*) first->next;
+        var = first->next;
         count += pupil_free(first);
         first = var;
     }
@@ -190,26 +190,39 @@ short pupil_free_list(pupil *p)
 short pupil_insert_after(pupil* current, pupil* new_element)
 {
     if (current == NULL) {
-        pupil_warning("pupil_insert_after: Can't insert after NULL");
+        pupil_warning("pupil_insert_after: Can't insert after NULL\n");
         return 0;
     }
     if (new_element == NULL) {
-        pupil_warning("pupil_insert_after: Can't insert NULL");
+        pupil_warning("pupil_insert_after: Can't insert NULL\n");
         return 0;
     }
-    
+    new_element->next = current->next;
+    new_element->prev = current;
+    current->next = new_element;
+    if (new_element->next != NULL) {
+        new_element->next->prev = new_element;
+    }
+    return 1;
 }
 
 short pupil_insert_before(pupil* current, pupil* new_element)
 {
     if (current == NULL) {
-        pupil_warning("pupil_insert_before: Can't insert before NULL");
+        pupil_warning("pupil_insert_before: Can't insert before NULL\n");
         return 0;
     }
     if (new_element == NULL) {
-        pupil_warning("pupil_insert_before: Can't insert NULL");
+        pupil_warning("pupil_insert_before: Can't insert NULL\n");
         return 0;
     }
+    new_element->prev = current->prev;
+    new_element->next = current;
+    current->prev = new_element;
+    if (new_element->prev != NULL) {
+        new_element->prev->next = new_element;
+    }
+    return 1;
 }
 
 // Вставляет новый элемент в список, считая что он отсортирован 
@@ -234,8 +247,8 @@ pupil* pupil_remove(pupil *current)
     if (current == NULL) {
         return NULL;
     }
-    n = (pupil*) current->next;
-    p = (pupil*) current->prev;
+    n = current->next;
+    p = current->prev;
     if (n == NULL && p == NULL) {
         return NULL;
     } else if (p == NULL) {
@@ -247,8 +260,8 @@ pupil* pupil_remove(pupil *current)
         current->prev = NULL;
         return p;
     } else {
-        p->next = (struct pupil*)n;
-        n->prev = (struct pupil*)p;
+        p->next = n;
+        n->prev = p;
         current->next = NULL;
         current->prev = NULL;
         return n;
@@ -263,7 +276,7 @@ pupil* pupil_first(pupil *p)
     }
     current = p;
     while(current->prev != NULL) {
-        current = (pupil*)current->prev;
+        current = current->prev;
     }
     return current;
 }
@@ -276,7 +289,7 @@ pupil* pupil_last(pupil *p)
     }
     current = p;
     while(current->next != NULL) {
-        current = (pupil*)current->next;
+        current = current->next;
     }
     return current;
 }
@@ -284,10 +297,10 @@ pupil* pupil_last(pupil *p)
 void pupil_print(pupil* p)
 {
     if (p == NULL) {
-        pupil_warning("pupil_print: NULL");
+        pupil_warning("pupil_print: NULL\n");
         return;
     }
-    printf("%s %s (grade: %d, age: %d)", p->surname, p->name, p->grade, p->age);
+    printf("%s %s (grade: %d, age: %d)\n", p->surname, p->name, p->grade, p->age);
 }
 
 void pupil_print_list(pupil* p)
@@ -297,7 +310,7 @@ void pupil_print_list(pupil* p)
 
         pupil_print(first);
         printf("\n");
-        first = (pupil*)first->next;
+        first = first->next;
     }
 }
 

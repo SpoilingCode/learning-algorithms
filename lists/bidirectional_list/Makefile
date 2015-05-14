@@ -9,3 +9,9 @@ example.o: example.c pupil.o pupil.c pupil.h
 
 example: example.o pupil.o
 	$(CC) -o example example.o pupil.o
+
+smoke_tests.o: smoke_tests.c pupil.o pupil.c pupil.h
+	$(CC) -c smoke_tests.c
+
+smoke_tests: smoke_tests.o pupil.o
+	$(CC) -o smoke_tests smoke_tests.o pupil.o
