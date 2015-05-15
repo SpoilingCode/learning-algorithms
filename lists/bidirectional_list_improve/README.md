@@ -1,2 +1,2 @@
 
-Advanced пример на языке "C". STL style.
+Advanced пример на языке "C". 
