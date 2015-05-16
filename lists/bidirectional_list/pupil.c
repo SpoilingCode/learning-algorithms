@@ -94,6 +94,8 @@ pupil* pupil_new()
     p->surname = NULL;
     p->age = 0;
     p->grade = 0;
+    p->next = NULL;
+    p->prev = NULL;
     return p;
 }
 
