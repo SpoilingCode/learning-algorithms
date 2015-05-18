@@ -15,3 +15,9 @@ smoke_tests.o: smoke_tests.c pupil.o pupil.c pupil.h
 
 smoke_tests: smoke_tests.o pupil.o
 	$(CC) -o smoke_tests smoke_tests.o pupil.o
+
+stress_tests.o: stress_tests.c pupil.o pupil.c pupil.h
+	$(CC) -c stress_tests.c
+
+stress_tests: stress_tests.o pupil.o
+	$(CC) -o stress_tests stress_tests.o pupil.o

@@ -65,6 +65,20 @@ short pupil_cmp(pupil* p1, pupil* p2)
     } else {
 
         cmp = pupil_strcmp(p1->surname, p2->surname);
+        if (cmp > 0) {
+            return 1;
+        } else if (cmp < 0) {
+            return -1;
+        } else {
+            cmp = pupil_strcmp(p1->name, p2->name);
+            if (cmp > 0) {
+                return 1;
+            } else if (cmp < 0) {
+                return -1;
+            } else {
+                return 0;
+            }
+        }
         return (cmp == 0 ? pupil_strcmp(p1->name, p2->name) : cmp);
     }
 }
@@ -80,6 +94,8 @@ pupil* pupil_new()
     p->surname = NULL;
     p->age = 0;
     p->grade = 0;
+    p->next = NULL;
+    p->prev = NULL;
     return p;
 }
 
@@ -134,11 +150,12 @@ void pupil_set_name(pupil* p, const char* name, short maxlength)
         free(p->name);
         p->name = NULL;
     }
-    p->name = (char*) malloc(chars*sizeof(char));
+    p->name = (char*) malloc((chars + 1)*sizeof(char));
     if (p->name == NULL) {
         pupil_error("Can't allocate memory for pupil->name\n");
     }
     strncpy(p->name, name, chars);
+    *(p->name + chars) = '\0';
 }
 
 void pupil_set_surname(pupil* p, const char* surname, short maxlength)
@@ -166,11 +183,12 @@ void pupil_set_surname(pupil* p, const char* surname, short maxlength)
         free(p->surname);
         p->surname = NULL;
     }
-    p->surname = (char*) malloc(chars*sizeof(char));
+    p->surname = (char*) malloc((chars + 1)*sizeof(char));
     if (p->surname == NULL) {
         pupil_error("Can't allocate memory for pupil->surname\n");
     }
     strncpy(p->surname, surname, chars);
+    *(p->surname + chars) = '\0';
 }
 
 short pupil_free_list(pupil *p)
@@ -230,8 +248,38 @@ short pupil_insert_before(pupil* current, pupil* new_element)
 // отсортированным по алфавиту. Если элемент с таким же именем и фамилией
 // то он добавляется после последнего элемента
 // Возвращает указатель на тот элемент, после которого он добавлен
+// Если он добавлен в начало, то возвращается указатель на него самого
 pupil* pupil_insert_alphabetically(pupil* any_list_element, pupil* new_element)
 {
+    if (any_list_element == NULL) {
+        pupil_warning("pupil_insert_alphabetically: list element NULL");
+        return NULL;
+    }
+    if (new_element == NULL) {
+        pupil_warning("pupil_insert_alphabetically: new element NULL");
+        return NULL;
+    }
+    short cmp = 0;
+    pupil *cursor = any_list_element;
+    do {
+        cmp = pupil_cmp(new_element, cursor);
+        if (cmp >= 0) {
+            if (cursor->next == NULL) {
+                pupil_insert_after(cursor, new_element);
+                return cursor;
+            } else {
+                cursor = cursor->next;
+            }
+        } else if (cursor->prev == NULL) {
+            pupil_insert_before(cursor, new_element);
+            return new_element;
+        } else if (pupil_cmp(new_element, cursor->prev) >= 0) {
+            pupil_insert_before(cursor, new_element);
+            return new_element;
+        } else {
+            cursor = cursor->prev;
+        }
+    } while(1);
     return NULL;
 }
 
@@ -309,9 +357,9 @@ void pupil_print_list(pupil* p)
     while (first != NULL) {
 
         pupil_print(first);
-        printf("\n");
         first = first->next;
     }
+    printf("\n");
 }
 
 pupil* pupil_sort(pupil* current)
