@@ -33,6 +33,6 @@ bidirectional_list* bidirectional_list_last(bidirectional_list *);
 void bidirectional_list_each(bidirectional_list* e, void ((*callback)()));
 
 void bidirectional_list_insertion_sort(bidirectional_list* any_element,
-        short ((*cmp)(void*, void*))); // указатель на функцию сравнения
+        short ((*cmp)(void*, void*)), void ((*printfunc)())); // указатель на функцию сравнения
 
 #endif 

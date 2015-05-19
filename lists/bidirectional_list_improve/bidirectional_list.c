@@ -180,9 +180,88 @@ void bidirectional_list_each(bidirectional_list* e, void ((*callback)()))
 }
 
 void bidirectional_list_insertion_sort(bidirectional_list* any_element,
-        short ((*cmp)(void*, void*)))
+        short ((*cmp)(void*, void*)), void ((*printfunc)()))
 {
+    bidirectional_list *first = bidirectional_list_first(any_element);
+    if (first == NULL) {
+        return;
+    }
+    if (cmp == NULL) {
+        return;
+    }
+    bidirectional_list *cursor = first; // Указатель на начало неотсортированной части списка
+    bidirectional_list *sorted, *item;
+    while (cursor != NULL) {
 
+        //printf("Main loop: cursor: ");
+        //printfunc(cursor->element);
+        item = cursor->prev;
+        if (item == NULL) {
+            cursor = cursor->next;
+            continue;
+        }
+        sorted = item->prev;
+        if (sorted == NULL) {
+            cursor = cursor->next;
+            continue;
+        }
+        bidirectional_list_remove(item);
+        while (sorted != NULL) {
+
+            //printf("Inner loop: cursor: ");
+            //printfunc(cursor->element);
+            //printf("item: ");
+            //printfunc(item->element);
+            //printf("sorted: ");
+            //printfunc(sorted->element);
+            if (cmp(sorted->element, item->element) < 0) {
+                //printf("Inserting after: sorted => item: \n");
+                //printfunc(sorted->element);
+                //printfunc(item->element);
+                bidirectional_list_insert_after(sorted, item);
+                cursor = cursor->next;
+                break;
+            }
+            if (sorted->prev == NULL) {
+                //printf("Inserting before: sorted => item: \n");
+                //printfunc(sorted->element);
+                //printfunc(item->element);
+                bidirectional_list_insert_before(sorted, item);
+                cursor = cursor->next;
+                break;
+            }
+            sorted = sorted->prev;
+        }
+    }
+
+    item = bidirectional_list_last(first);
+    if (item == NULL) {
+        return;
+    }
+    sorted = item->prev;
+    bidirectional_list_remove(item);
+    while (sorted != NULL) {
+
+        //printf("Last loop: item: ");
+        //printfunc(item->element);
+        //printf("sorted: ");
+        //printfunc(sorted->element);
+        if (cmp(sorted->element, item->element) < 0) {
+            //printf("Inserting after: sorted => item: \n");
+            //printfunc(sorted->element);
+            //printfunc(item->element);
+            bidirectional_list_insert_after(sorted, item);
+            break;
+        }
+        if (sorted->prev == NULL) {
+            //printf("Inserting before: sorted => item: \n");
+            //printfunc(sorted->element);
+            //printfunc(item->element);
+            bidirectional_list_insert_before(sorted, item);
+            break;
+        }
+        sorted = sorted->prev;
+    }
 }
 
 #endif
